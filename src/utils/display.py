@@ -1,7 +1,7 @@
 from rich.console import Console
 from rich.prompt import Prompt
 from simple_term_menu import TerminalMenu
-from src.utils.search import search_users
+from src.utils.search import search_users, search_subreddits
 
 console = Console()
 
@@ -98,14 +98,70 @@ def display_bot_answer(result, collection, history, user_input):
     )
 
 
-def select_topic():
+def select_topic() -> str:
     topic = Prompt.ask(
-        "[bold red]Type something you want to search or learn about in Twitter ⌨️ [/bold red]"
+        "[bold red]Type something you want to search or learn about ⌨️ [/bold red]"
     )
     return topic
 
 
-def select_search_queries(topic):
+def select_search_queries(topic: str):
+    platform = Prompt.ask(
+        "Select a platform to search on",
+        choices=["twitter", "reddit"],
+        default="reddit",
+    )
+
+    if platform == "reddit":
+        keywords, accounts = select_search_queries_reddit(topic)
+    elif platform == "twitter":
+        keywords, accounts = select_search_queries_twitter(topic)
+    else:
+        raise ValueError(f"Service {platform} is not supported")
+
+    return platform, keywords, accounts
+
+
+def select_search_queries_reddit(topic: str):
+    search_type = Prompt.ask(
+        "Enter a search type",
+        choices=["keywords", "subreddits"],
+        default="keywords",
+    )
+
+    if search_type == "subreddits":
+        with console.status(
+            "Finding relevant subreddits about this topic \n",
+            spinner="aesthetic",
+            speed=1.5,
+            spinner_style="red",
+        ):
+            subreddits = search_subreddits(q=topic, count=10)
+
+        options = [f"{sr.display_name} ({sr.subscribers})" for sr in subreddits]
+
+        terminal_menu = TerminalMenu(
+            options,
+            multi_select=True,
+            show_multi_select_hint=True,
+            multi_select_cursor="x ",
+            title="Select one or more subreddits to load the data from: \n",
+        )
+
+        menu_entry_indices = terminal_menu.show()
+        subreddit_display_names = [
+            subreddits[i].display_name for i in menu_entry_indices
+        ]
+        keywords = None
+
+    elif search_type == "keywords":
+        subreddit_display_names = None
+        keywords = topic
+
+    return keywords, subreddit_display_names
+
+
+def select_search_queries_twitter(topic: str):
     search_type = Prompt.ask(
         "Enter a search type",
         choices=["keywords", "accounts"],
@@ -144,7 +200,7 @@ def select_search_queries(topic):
     return keywords, twitter_users
 
 
-def select_number_of_tweets():
+def select_number_of_posts():
     default_tweet_number = 10
     error = True
     i = 0
