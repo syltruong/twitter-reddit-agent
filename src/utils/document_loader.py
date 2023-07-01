@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Sequence, Union
 
 from praw import Reddit
-from praw.models import Submission
+from praw.models import Submission, MoreComments
 from rich.console import Console
 from contextlib import nullcontext
 
@@ -245,11 +245,22 @@ class RedditSubLoader(DocumentLoader):
         return documents
 
     def _format_submissions(self, submissions: List[Submission]) -> List[Document]:
+        N_LIMIT_COMMENTS = 10
+
         ret = []
 
         for sub in submissions:
+            comments = []
+
+            for top_level_comment in sub.comments:
+                if isinstance(top_level_comment, MoreComments):
+                    continue
+                comments.append(top_level_comment.body)
+                if len(comments) > N_LIMIT_COMMENTS:
+                    break
+
             doc = Document(
-                page_content=" ".join([sub.title, sub.selftext]),
+                page_content=" ".join([sub.title, sub.selftext, *comments]),
                 metadata=dict(
                     title=sub.title,
                     subreddit=sub.subreddit.display_name,
