@@ -10,24 +10,25 @@ def display_intro():
     message = """
 _____________________________________________________________________________________________________________ 
 
- _____        _ _   _               ___                   _   
-|_   _|      (_| | | |             / _ \                 | |  
-  | __      ___| |_| |_ ___ _ __  / /_\ \ __ _  ___ _ __ | |_ 
-  | \ \ /\ / | | __| __/ _ | '__| |  _  |/ _` |/ _ | '_ \| __|
-  | |\ V  V /| | |_| ||  __| |    | | | | (_| |  __| | | | |_ 
-  \_/ \_/\_/ |_|\__|\__\___|_|    \_| |_/\__, |\___|_| |_|\__|
-                                          __/ |               
-                                         |___/                
+╭━━━━╮╱╱╱╱╭╮╱╭╮╱╱╱╱╱╭━━━╮╱╱╱╱╭╮╱╭╮╭╮╭━━━╮╱╱╱╱╱╱╱╱╭╮
+┃╭╮╭╮┃╱╱╱╭╯╰┳╯╰╮╱╱╱╱┃╭━╮┃╱╱╱╱┃┃╱┃┣╯╰┫╭━╮┃╱╱╱╱╱╱╱╭╯╰╮
+╰╯┃┃┣┫╭╮╭╋╮╭┻╮╭╋━━┳━┫╰━╯┣━━┳━╯┣━╯┣╮╭┫┃╱┃┣━━┳━━┳━╋╮╭╯
+╱╱┃┃┃╰╯╰╯┣┫┃╱┃┃┃┃━┫╭┫╭╮╭┫┃━┫╭╮┃╭╮┣┫┃┃╰━╯┃╭╮┃┃━┫╭╮┫┃
+╱╱┃┃╰╮╭╮╭┫┃╰╮┃╰┫┃━┫┃┃┃┃╰┫┃━┫╰╯┃╰╯┃┃╰┫╭━╮┃╰╯┃┃━┫┃┃┃╰╮
+╱╱╰╯╱╰╯╰╯╰┻━╯╰━┻━━┻╯╰╯╰━┻━━┻━━┻━━┻┻━┻╯╱╰┻━╮┣━━┻╯╰┻━╯
+╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃
+╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰━━╯
+
 _____________________________________________________________________________________________________________   
     """
     console.print(message, style="red bold")
 
     console.print(
         """
-Twitter Agent scrapes data from Twitter and leverages the power of [red]Large Language Models (LLMs)[/red] 
+Twitter Reddit Agent scrapes data from Twitter/Reddit and leverages the power of [red]Large Language Models (LLMs)[/red] 
 to interactively chat with the extracted tweets 💬, summarize them 📝 and provide conversation ideas 💡.
 
-Twitter Agent helps you quickly gather insights on real-time events such as news, build a technical knowledge
+Twitter Reddit Agent helps you quickly gather insights on real-time events such as news, build a technical knowledge
 on your favourite programming language or research any topic that interests you. 
 
 Tools and libraries used: 
@@ -40,6 +41,7 @@ Tools and libraries used:
 Third party services:   
     * [bold]OpenAI[/bold] (🔑 needed)
     * [bold]Twitter[/bold] (🔑 needed)
+    * [bold]Reddit[/bold] (🔑 needed)
 
 *************************************************************************************************************
 
@@ -201,15 +203,15 @@ def select_search_queries_twitter(topic: str):
 
 
 def select_number_of_posts():
-    default_tweet_number = 10
+    default_post_number = 10
     error = True
     i = 0
     while error:
         if i != 0:
             console.print("[red]Please enter an integer ⚠️[/red]")
         number_of_tweets = Prompt.ask(
-            f"Enter the number of tweets to fetch per account ({default_tweet_number})",
-            default=default_tweet_number,
+            f"Enter the number of posts to fetch per account ({default_post_number})",
+            default=default_post_number,
         )
         try:
             number_of_tweets = int(number_of_tweets)
